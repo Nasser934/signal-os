@@ -1,0 +1,137 @@
+{
+  "project": "Signal OS - Content Intelligence Platform",
+  "releases": [
+    {"name": "MVP (Jul)", "description": "Core scoring + basic analytics"},
+    {"name": "v1.1 (Aug)", "description": "Sentiment + insights dashboard"},
+    {"name": "v1.2 (Sep)", "description": "Forecasting + command center"}
+  ],
+  "epics": [
+    {
+      "name": "Content Scoring",
+      "features": [
+        {
+          "name": "Real-time Scoring Engine",
+          "stories": [
+            {"name": "Score tweet across 8 dimensions", "priority": "must", "release": "MVP (Jul)", "points": 8, "description": "AI-powered 0-100 score across hook, readability, structure, emotion, timing, engagement, audience, clarity"},
+            {"name": "Batch score multiple posts", "priority": "should", "release": "MVP (Jul)", "points": 5, "description": "Upload and score up to 10 posts simultaneously"},
+            {"name": "Score history and trends", "priority": "should", "release": "v1.1 (Aug)", "points": 5, "description": "Track scoring history over time with improvement trends"},
+            {"name": "Score sharing/export", "priority": "could", "release": "v1.2 (Sep)", "points": 3, "description": "Export scorecards as images for social sharing"}
+          ]
+        },
+        {
+          "name": "AI Suggestions",
+          "stories": [
+            {"name": "Dimension-specific improvement tips", "priority": "must", "release": "MVP (Jul)", "points": 8, "description": "Actionable suggestions for each of the 8 scoring dimensions"},
+            {"name": "Rewrite suggestions with score preview", "priority": "should", "release": "MVP (Jul)", "points": 8, "description": "AI-generated rewrite options with predicted score improvement"},
+            {"name": "Personalized tips based on history", "priority": "should", "release": "v1.1 (Aug)", "points": 5, "description": "ML-powered suggestions based on user's best-performing content"}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Analytics & Insights",
+      "features": [
+        {
+          "name": "Sentiment Analysis",
+          "stories": [
+            {"name": "Real-time sentiment detection", "priority": "must", "release": "v1.1 (Aug)", "points": 8, "description": "Analyze emotional tone of content (positive, negative, neutral, mixed)"},
+            {"name": "Emotion breakdown (joy, anger, sadness, fear)", "priority": "should", "release": "v1.1 (Aug)", "points": 5, "description": "Detailed emotion classification with confidence scores"},
+            {"name": "Sentiment timeline tracking", "priority": "could", "release": "v1.2 (Sep)", "points": 5, "description": "Track sentiment changes over time for topics and accounts"}
+          ]
+        },
+        {
+          "name": "Trend Forecasting",
+          "stories": [
+            {"name": "Trending topic detection", "priority": "must", "release": "v1.2 (Sep)", "points": 8, "description": "Identify trending topics across X categories"},
+            {"name": "72-hour trend prediction", "priority": "should", "release": "v1.2 (Sep)", "points": 13, "description": "AI-powered prediction of which topics will grow in next 72 hours"},
+            {"name": "Topic velocity scoring", "priority": "could", "release": "v1.2 (Sep)", "points": 5, "description": "Rate how fast a topic is growing"}
+          ]
+        },
+        {
+          "name": "Performance Dashboard",
+          "stories": [
+            {"name": "KPI overview cards", "priority": "must", "release": "MVP (Jul)", "points": 5, "description": "Content score, engagement rate, impressions, follower growth"},
+            {"name": "Engagement trend charts", "priority": "must", "release": "MVP (Jul)", "points": 8, "description": "Line and bar charts for impressions, engagements over time"},
+            {"name": "Score breakdown visualization", "priority": "should", "release": "MVP (Jul)", "points": 5, "description": "Radar chart showing 8 dimension scores"},
+            {"name": "Weekly automated reports", "priority": "should", "release": "v1.1 (Aug)", "points": 8, "description": "Email digest with performance summary and AI insights"}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Publishing & Workflow",
+      "features": [
+        {
+          "name": "Command Center",
+          "stories": [
+            {"name": "Content queue management", "priority": "must", "release": "MVP (Jul)", "points": 8, "description": "View, organize, and manage scheduled/draft content"},
+            {"name": "One-click publish to X", "priority": "must", "release": "MVP (Jul)", "points": 8, "description": "Direct publishing via X API with OAuth"},
+            {"name": "Optimal timing recommendations", "priority": "should", "release": "v1.1 (Aug)", "points": 8, "description": "AI-suggested best posting times based on audience activity"},
+            {"name": "Content calendar view", "priority": "should", "release": "v1.2 (Sep)", "points": 5, "description": "Visual calendar showing scheduled posts"}
+          ]
+        },
+        {
+          "name": "Post Autopsy",
+          "stories": [
+            {"name": "Post-performance analysis", "priority": "must", "release": "MVP (Jul)", "points": 5, "description": "Compare predicted vs actual performance"},
+            {"name": "Why it worked/failed breakdown", "priority": "should", "release": "v1.1 (Aug)", "points": 8, "description": "AI analysis of factors contributing to success or failure"},
+            {"name": "Comparison with top posts", "priority": "could", "release": "v1.2 (Sep)", "points": 5, "description": "Side-by-side comparison with user's best-performing content"}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User Management & Growth",
+      "features": [
+        {
+          "name": "Authentication",
+          "stories": [
+            {"name": "Email/password signup and login", "priority": "must", "release": "MVP (Jul)", "points": 5, "description": "Secure authentication with JWT tokens"},
+            {"name": "Google Sign-In (OAuth)", "priority": "must", "release": "MVP (Jul)", "points": 5, "description": "One-click Google authentication"},
+            {"name": "X account connection (OAuth)", "priority": "must", "release": "MVP (Jul)", "points": 8, "description": "Connect X account for analytics and publishing"},
+            {"name": "Password reset flow", "priority": "must", "release": "MVP (Jul)", "points": 3, "description": "Secure password reset via email"}
+          ]
+        },
+        {
+          "name": "Subscription & Billing",
+          "stories": [
+            {"name": "Free tier (5 scores/day)", "priority": "must", "release": "MVP (Jul)", "points": 5, "description": "Limited free access for user acquisition"},
+            {"name": "Pro tier ($29/mo) with Stripe", "priority": "must", "release": "MVP (Jul)", "points": 8, "description": "Unlimited scores, full features, Stripe billing"},
+            {"name": "Team tier ($79/mo)", "priority": "should", "release": "v1.1 (Aug)", "points": 8, "description": "Multi-account, collaboration, API access"},
+            {"name": "Usage tracking and limits", "priority": "must", "release": "MVP (Jul)", "points": 5, "description": "Track and enforce plan limits"}
+          ]
+        },
+        {
+          "name": "Onboarding",
+          "stories": [
+            {"name": "Welcome flow with first score", "priority": "must", "release": "MVP (Jul)", "points": 8, "description": "Guided onboarding ending with first content score"},
+            {"name": "Interactive product tour", "priority": "should", "release": "v1.1 (Aug)", "points": 5, "description": "Step-by-step feature walkthrough"},
+            {"name": "Personalized setup based on creator type", "priority": "could", "release": "v1.2 (Sep)", "points": 5, "description": "Tailored experience for solo creators, teams, agencies"}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Platform & Security",
+      "features": [
+        {
+          "name": "API Infrastructure",
+          "stories": [
+            {"name": "RESTful API with rate limiting", "priority": "must", "release": "MVP (Jul)", "points": 8, "description": "Secure API with tiered rate limits"},
+            {"name": "Webhook support", "priority": "should", "release": "v1.1 (Aug)", "points": 5, "description": "Real-time event notifications"},
+            {"name": "API key management", "priority": "should", "release": "v1.2 (Sep)", "points": 5, "description": "Self-service API key generation and rotation"}
+          ]
+        },
+        {
+          "name": "Security & Compliance",
+          "stories": [
+            {"name": "GDPR compliance (data export/delete)", "priority": "must", "release": "MVP (Jul)", "points": 8, "description": "Right to access, portability, erasure"},
+            {"name": "SOC 2 Type I audit", "priority": "should", "release": "v1.1 (Aug)", "points": 13, "description": "Security controls documentation and audit"},
+            {"name": "End-to-end encryption for sensitive data", "priority": "should", "release": "v1.1 (Aug)", "points": 8, "description": "AES-256 encryption at rest, TLS 1.3 in transit"},
+            {"name": "Security headers and XSS protection", "priority": "must", "release": "MVP (Jul)", "points": 5, "description": "CSP, HSTS, input sanitization"}
+          ]
+        }
+      ]
+    }
+  ]
+}

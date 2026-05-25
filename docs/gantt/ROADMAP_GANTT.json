@@ -1,0 +1,23 @@
+{
+  "project": "Signal OS Q3 2026 Product Roadmap",
+  "start_date": "2026-07-01",
+  "tasks": [
+    {"id": "T1", "name": "Q3 Planning & Kickoff", "duration": 5, "dependencies": []},
+    {"id": "T2", "name": "Infrastructure: Multi-region setup", "duration": 14, "dependencies": ["T1"]},
+    {"id": "T3", "name": "Infrastructure: Autoscaling implementation", "duration": 10, "dependencies": ["T1"]},
+    {"id": "T4", "name": "Scoring Engine: Latency optimization", "duration": 21, "dependencies": ["T1"]},
+    {"id": "T5", "name": "Security: SOC 2 audit prep", "duration": 30, "dependencies": ["T1"]},
+    {"id": "T6", "name": "Feature: Sentiment Analysis Dashboard", "duration": 28, "dependencies": ["T4"]},
+    {"id": "T7", "name": "Feature: Trend Forecasting v1", "duration": 35, "dependencies": ["T4"]},
+    {"id": "T8", "name": "Growth: Product Hunt launch", "duration": 14, "dependencies": ["T6"]},
+    {"id": "T9", "name": "Growth: SEO content engine", "duration": 21, "dependencies": ["T1"]},
+    {"id": "T10", "name": "UX: Onboarding flow redesign", "duration": 18, "dependencies": ["T6"]},
+    {"id": "T11", "name": "UX: Command Center redesign", "duration": 28, "dependencies": ["T6", "T7"]},
+    {"id": "T12", "name": "Security: Penetration testing", "duration": 10, "dependencies": ["T5"]},
+    {"id": "T13", "name": "QA: Full test suite for scoring", "duration": 21, "dependencies": ["T4"]},
+    {"id": "T14", "name": "Growth: Partnership integrations", "duration": 21, "dependencies": ["T8"]},
+    {"id": "T15", "name": "Infrastructure: CDN + caching", "duration": 14, "dependencies": ["T3"]},
+    {"id": "T16", "name": "Analytics: Metrics dashboard", "duration": 14, "dependencies": ["T6"]},
+    {"id": "T17", "name": "Q3 Review & Retrospective", "duration": 5, "dependencies": ["T11", "T12", "T14"]}
+  ]
+}
