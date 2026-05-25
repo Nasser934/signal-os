@@ -17,6 +17,8 @@ import {
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, getDay } from 'date-fns';
 import GlassCard from '@/components/GlassCard';
 import ScoreBadge from '@/components/ScoreBadge';
+import NangoConnect from '@/components/NangoConnect';
+import XPublishPanel from '@/components/XPublishPanel';
 import { cn } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */
@@ -484,6 +486,21 @@ export default function Publish() {
         >
           <Plus className="w-4 h-4" /> New Post
         </motion.button>
+      </motion.div>
+
+      {/* Nango X Connection Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.12 }}
+        className="flex items-center gap-3 p-3 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[#1A1D2E]/50"
+      >
+        <NangoConnect variant="button" />
+        <div className="flex-1" />
+        <XPublishPanel
+          draft={null}
+          compact
+        />
       </motion.div>
 
       {/* Tabs */}

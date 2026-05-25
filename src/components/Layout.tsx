@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import NangoConnect from './NangoConnect';
+import { useNango } from '@/lib/nangoContext';
 import { Search, Bell } from 'lucide-react';
 
 export interface LayoutProps {
@@ -11,8 +13,8 @@ export interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { xProfile } = useNango();
 
-  // Get page title from route
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === '/dashboard') return 'Dashboard';
@@ -81,9 +83,27 @@ export default function Layout({ children }: LayoutProps) {
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#FF4444] rounded-full" />
             </button>
 
+            {/* Nango X Connection */}
+            <NangoConnect variant="minimal" />
+
             {/* User Avatar */}
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4E8DFF] to-[#00C8FF] flex items-center justify-center text-xs font-bold text-[#141725] cursor-pointer">
-              U
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-[#141725] cursor-pointer overflow-hidden"
+              style={
+                xProfile?.profile_image_url
+                  ? { background: 'transparent' }
+                  : { background: 'linear-gradient(135deg, #4E8DFF, #00C8FF)' }
+              }
+            >
+              {xProfile?.profile_image_url ? (
+                <img
+                  src={xProfile.profile_image_url}
+                  alt={xProfile.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                'U'
+              )}
             </div>
           </div>
         </header>

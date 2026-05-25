@@ -17,11 +17,15 @@ import {
   Minus,
   Eye,
   XCircle,
+  Twitter,
+  Shield,
 } from 'lucide-react';
 import KPICard from '@/components/KPICard';
 import GlassCard from '@/components/GlassCard';
 import ScoreBadge from '@/components/ScoreBadge';
 import DataTable from '@/components/DataTable';
+import NangoConnect from '@/components/NangoConnect';
+import XPostsFeed from '@/components/XPostsFeed';
 import {
   AreaChart,
   Area,
@@ -440,6 +444,31 @@ export default function Dashboard() {
           </ResponsiveContainer>
           <p className="text-xs text-[#5A6480] mt-2">Best: 92/100 on Wed</p>
         </GlassCard>
+      </motion.div>
+
+      {/* ======== SECTION 3.5: Nango X Integration ======== */}
+      <motion.div variants={childFadeUp} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* X Account Status */}
+        <div className="lg:col-span-1">
+          <NangoConnect variant="card" showSync />
+        </div>
+
+        {/* X Posts Feed via Nango */}
+        <div className="lg:col-span-2">
+          <GlassCard className="h-full">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Twitter className="w-4 h-4 text-[#4E8DFF]" />
+                <h3 className="text-[#E0E4F0] font-semibold text-sm">X Posts via Nango</h3>
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] text-[#5A6480]">
+                <Shield className="w-3 h-3 text-emerald-400" />
+                <span>Nango OAuth</span>
+              </div>
+            </div>
+            <XPostsFeed />
+          </GlassCard>
+        </div>
       </motion.div>
 
       {/* ======== SECTION 4: Performance Tables ======== */}

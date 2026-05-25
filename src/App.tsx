@@ -1,4 +1,6 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from '@/components/ui/sonner';
+import { NangoProvider } from '@/lib/nangoContext';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
@@ -23,29 +25,41 @@ import Pricing from './pages/Pricing';
 export default function App() {
   return (
     <HashRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route element={<Layout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/drafts" element={<DraftScorer />} />
-          <Route path="/insights" element={<Insights />} />
-          <Route path="/timeline" element={<Timeline />} />
-          <Route path="/creators" element={<Creators />} />
-          <Route path="/hashtags" element={<Hashtags />} />
-          <Route path="/topics" element={<Topics />} />
-          <Route path="/sentiment" element={<Sentiment />} />
-          <Route path="/forecasting" element={<Forecasting />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/publish" element={<Publish />} />
-          <Route path="/command" element={<CommandCenter />} />
-          <Route path="/replies" element={<Replies />} />
-          <Route path="/weekly" element={<WeeklyReport />} />
-          <Route path="/autopsy" element={<Autopsy />} />
-          <Route path="/scorecard" element={<Scorecard />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/pricing" element={<Pricing />} />
-        </Route>
-      </Routes>
+      <NangoProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/drafts" element={<DraftScorer />} />
+            <Route path="/insights" element={<Insights />} />
+            <Route path="/timeline" element={<Timeline />} />
+            <Route path="/creators" element={<Creators />} />
+            <Route path="/hashtags" element={<Hashtags />} />
+            <Route path="/topics" element={<Topics />} />
+            <Route path="/sentiment" element={<Sentiment />} />
+            <Route path="/forecasting" element={<Forecasting />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/publish" element={<Publish />} />
+            <Route path="/command" element={<CommandCenter />} />
+            <Route path="/replies" element={<Replies />} />
+            <Route path="/weekly" element={<WeeklyReport />} />
+            <Route path="/autopsy" element={<Autopsy />} />
+            <Route path="/scorecard" element={<Scorecard />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/pricing" element={<Pricing />} />
+          </Route>
+        </Routes>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: '#1A1D2E',
+              border: '1px solid rgba(255,255,255,0.08)',
+              color: '#E0E4F0',
+            },
+          }}
+        />
+      </NangoProvider>
     </HashRouter>
   );
 }

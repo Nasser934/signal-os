@@ -17,8 +17,10 @@ import {
   CheckCircle2,
   ChevronDown,
   Zap,
+  Plug,
 } from 'lucide-react';
 import GlassCard from '@/components/GlassCard';
+import NangoConnect from '@/components/NangoConnect';
 import { cn } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */
@@ -26,6 +28,7 @@ import { cn } from '@/lib/utils';
 /* ------------------------------------------------------------------ */
 type SettingsCategory =
   | 'account'
+  | 'integrations'
   | 'data'
   | 'scoring'
   | 'ai_engine'
@@ -40,6 +43,7 @@ type SettingsCategory =
 /* ------------------------------------------------------------------ */
 const categories: { id: SettingsCategory; label: string; icon: typeof User }[] = [
   { id: 'account', label: 'Account', icon: User },
+  { id: 'integrations', label: 'Integrations', icon: Plug },
   { id: 'data', label: 'Data', icon: Database },
   { id: 'scoring', label: 'Scoring', icon: SlidersHorizontal },
   { id: 'ai_engine', label: 'AI Engine', icon: Brain },
@@ -195,6 +199,114 @@ function AccountSection() {
           <SettingRow label="Password" description="Last changed 30 days ago">
             <button className="btn-secondary text-xs py-1.5">Change</button>
           </SettingRow>
+        </div>
+      </Section>
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Integrations Section — Nango-powered                               */
+/* ------------------------------------------------------------------ */
+function IntegrationsSection() {
+  return (
+    <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-5">
+      <Section
+        title="API Integrations"
+        description="Connect your external accounts via Nango for seamless content sync and publishing"
+      >
+        <NangoConnect variant="card" showSync />
+      </Section>
+
+      <Section title="Available Integrations" description="Platform integrations powered by Nango">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            {
+              name: 'X (Twitter)',
+              desc: 'OAuth 2.0 — Post, sync, and analyze',
+              status: 'connected',
+              icon: Zap,
+            },
+            {
+              name: 'LinkedIn',
+              desc: 'Coming soon — Cross-post to professional network',
+              status: 'soon',
+              icon: Zap,
+            },
+            {
+              name: 'Threads',
+              desc: 'Coming soon — Share to Meta text platform',
+              status: 'soon',
+              icon: Zap,
+            },
+            {
+              name: 'Bluesky',
+              desc: 'Coming soon — Decentralized social publishing',
+              status: 'soon',
+              icon: Zap,
+            },
+          ].map((integration) => (
+            <div
+              key={integration.name}
+              className="flex items-start gap-3 p-4 rounded-lg bg-white/[0.02] border border-[rgba(255,255,255,0.06)] hover:border-[rgba(78,141,255,0.2)] transition-colors"
+            >
+              <div
+                className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                  integration.status === 'connected'
+                    ? 'bg-emerald-500/10 text-emerald-400'
+                    : 'bg-[#4E8DFF]/10 text-[#4E8DFF]'
+                }`}
+              >
+                <integration.icon className="w-4 h-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[#E0E4F0] text-sm font-medium">{integration.name}</span>
+                  {integration.status === 'connected' && (
+                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded-full">
+                      Active
+                    </span>
+                  )}
+                  {integration.status === 'soon' && (
+                    <span className="text-[10px] bg-[#4E8DFF]/10 text-[#4E8DFF] px-1.5 py-0.5 rounded-full">
+                      Soon
+                    </span>
+                  )}
+                </div>
+                <p className="text-[#5A6480] text-xs mt-0.5">{integration.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Nango Configuration" description="Manage your Nango integration settings">
+        <div className="p-4 rounded-lg bg-[#4E8DFF]/5 border border-[#4E8DFF]/10">
+          <div className="flex items-center gap-3 mb-3">
+            <Shield className="w-5 h-5 text-[#4E8DFF]" />
+            <div>
+              <p className="text-[#E0E4F0] text-sm font-medium">Secure by Design</p>
+              <p className="text-[#5A6480] text-xs">Your API credentials are never stored in Signal OS</p>
+            </div>
+          </div>
+          <ul className="space-y-2 text-xs text-[#8B95B8]">
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+              OAuth tokens managed and refreshed by Nango
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+              API requests proxied through Nango with automatic retry
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+              Rate limiting handled transparently
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+              Disconnect anytime to revoke access
+            </li>
+          </ul>
         </div>
       </Section>
     </motion.div>
@@ -733,6 +845,7 @@ function AdvancedSection() {
 function SettingsPanel({ category }: { category: SettingsCategory }) {
   switch (category) {
     case 'account': return <AccountSection />;
+    case 'integrations': return <IntegrationsSection />;
     case 'data': return <DataSection />;
     case 'scoring': return <ScoringSection />;
     case 'ai_engine': return <AIEngineSection />;
