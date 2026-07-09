@@ -1,595 +1,104 @@
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { format, parseISO } from 'date-fns';
-import {
-  FileText,
-  MessageCircle,
-  TrendingUp,
-  Award,
-  ExternalLink,
-  Search,
-  StickyNote,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import GlassCard from '@/components/GlassCard';
-import { timelineEvents } from '@/lib/mockData';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Clock, TrendingUp, TrendingDown, Target, Flame, Star } from 'lucide-react';
 
-/* ------------------------------------------------------------------ */
-/*  Types                                                               */
-/* ------------------------------------------------------------------ */
+const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const hours = Array.from({ length: 24 }, (_, i) => i);
 
-type EventType = 'post' | 'engagement' | 'milestone' | 'trend';
-
-interface TimelineEvent {
-  id: string;
-  date: string;
-  time: string;
-  type: EventType;
-  title: string;
-  impact: 'high' | 'medium' | 'low';
-  description: string;
-}
-
-/* ------------------------------------------------------------------ */
-/*  Constants                                                           */
-/* ------------------------------------------------------------------ */
-
-const eventTypeConfig: Record<
-  EventType,
-  { color: string; icon: typeof FileText; label: string }
-> = {
-  post: { color: '#4E8DFF', icon: FileText, label: 'Post' },
-  engagement: { color: '#00C8FF', icon: MessageCircle, label: 'Reply' },
-  milestone: { color: '#FF6B9D', icon: Award, label: 'Milestone' },
-  trend: { color: '#9F7AEA', icon: TrendingUp, label: 'Trend' },
+const heatmapData: Record<string, number[]> = {
+  Mon: [20,15,12,10,15,25,45,65,85,78,72,68,75,80,82,75,70,65,60,55,50,45,35,25],
+  Tue: [18,14,11,10,18,30,50,70,88,82,75,70,72,78,85,80,75,68,62,58,52,42,32,22],
+  Wed: [22,16,13,11,20,35,55,72,90,85,78,74,76,82,88,84,78,70,65,60,55,48,38,28],
+  Thu: [19,15,12,10,16,28,48,68,86,80,74,70,73,79,84,81,76,69,63,58,52,44,34,24],
+  Fri: [25,18,14,12,22,38,58,75,92,88,80,76,78,85,90,86,80,72,66,62,58,50,42,32],
+  Sat: [30,22,18,15,20,28,42,55,65,70,72,75,78,80,82,78,72,65,58,52,48,42,35,28],
+  Sun: [28,20,16,14,18,25,40,52,62,68,70,73,76,78,80,76,70,63,56,50,45,40,32,26],
 };
 
-const filterOptions: { value: EventType | 'all'; label: string }[] = [
-  { value: 'all', label: 'All Events' },
-  { value: 'post', label: 'Posts' },
-  { value: 'engagement', label: 'Engagement' },
-  { value: 'milestone', label: 'Milestones' },
-  { value: 'trend', label: 'Trends' },
-];
-
-const dateRangeOptions = [
-  'All Time',
-  'Last 7 Days',
-  'Last 30 Days',
-];
-
-const easing = [0.22, 1, 0.36, 1] as [number, number, number, number];
-
-/* ------------------------------------------------------------------ */
-/*  Helper Components                                                   */
-/* ------------------------------------------------------------------ */
-
-function EventIcon({ type, size = 16 }: { type: EventType; size?: number }) {
-  const config = eventTypeConfig[type];
-  const Icon = config.icon;
-  return <Icon size={size} style={{ color: config.color }} />;
+function getColor(value: number): string {
+  if (value >= 85) return '#00E5A0';
+  if (value >= 70) return '#4E8DFF';
+  if (value >= 55) return '#FFD93D';
+  if (value >= 40) return '#A78BFA';
+  return 'rgba(255,255,255,0.08)';
 }
 
-function EventTypeBadge({ type }: { type: EventType }) {
-  const config = eventTypeConfig[type];
+export default function Timeline() {
+  const [hoveredCell, setHoveredCell] = useState<{ day: string; hour: number; value: number } | null>(null);
+
   return (
-    <span
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium"
-      style={{
-        backgroundColor: `${config.color}20`,
-        color: config.color,
-        border: `1px solid ${config.color}30`,
-      }}
-    >
-      <EventIcon type={type} size={12} />
-      {config.label}
-    </span>
-  );
-}
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div><h2 className="text-[#E0E4F0] font-semibold text-lg">Timing Intelligence</h2><p className="text-[#8B95B8] text-xs mt-0.5">Optimal posting times heatmap</p></div>
+        <div className="flex items-center gap-4 text-[10px]">
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded" style={{ background: '#00E5A0' }} />Best</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded" style={{ background: '#4E8DFF' }} />Good</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded" style={{ background: '#FFD93D' }} />Fair</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded" style={{ background: '#A78BFA' }} />Low</span>
+        </div>
+      </div>
 
-function ImpactBadge({ impact }: { impact: 'high' | 'medium' | 'low' }) {
-  const colors = {
-    high: { bg: 'rgba(255,68,68,0.12)', text: '#FF4444', label: 'High' },
-    medium: { bg: 'rgba(255,179,71,0.12)', text: '#FFB347', label: 'Medium' },
-    low: { bg: 'rgba(34,197,94,0.12)', text: '#22C55E', label: 'Low' },
-  };
-  const c = colors[impact];
-  return (
-    <span
-      className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider"
-      style={{ backgroundColor: c.bg, color: c.text }}
-    >
-      {c.label}
-    </span>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Detail Panel                                                        */
-/* ------------------------------------------------------------------ */
-
-function EventDetailPanel({ event, onClose }: { event: TimelineEvent; onClose: () => void }) {
-  return (
-    <motion.div
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: 'auto', opacity: 1 }}
-      exit={{ height: 0, opacity: 0 }}
-      transition={{ duration: 0.3, ease: easing }}
-      className="overflow-hidden"
-    >
-      <GlassCard className="mt-3" glowColor="blue">
-        <div className="space-y-4">
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <EventTypeBadge type={event.type} />
-              <ImpactBadge impact={event.impact} />
-              <span className="text-xs text-[#5A6480] font-data">
-                {format(parseISO(event.date), 'MMM dd, yyyy')} at {event.time}
-              </span>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-1 rounded-md hover:bg-[rgba(255,255,255,0.08)] transition-colors text-[#5A6480] hover:text-[#E0E4F0]"
-            >
-              <ChevronUp size={16} />
-            </button>
-          </div>
-
-          {/* Content */}
-          <div>
-            <h4 className="text-lg font-display font-semibold text-[#E0E4F0] mb-1">
-              {event.title}
-            </h4>
-            <p className="text-sm text-[#8B95B8] leading-relaxed">
-              {event.description}
-            </p>
-          </div>
-
-          {/* Metrics Grid */}
-          <div className="grid grid-cols-4 gap-3">
-            {[
-              { label: 'Impressions', value: '12.4K' },
-              { label: 'Engagement', value: '4.2%' },
-              { label: 'Replies', value: '156' },
-              { label: 'Reposts', value: '89' },
-            ].map((m) => (
-              <div
-                key={m.label}
-                className="bg-[rgba(255,255,255,0.03)] rounded-lg p-3 text-center"
-              >
-                <div className="text-sm font-bold font-data text-[#E0E4F0]">{m.value}</div>
-                <div className="text-[10px] text-[#5A6480] uppercase tracking-wider mt-0.5">
-                  {m.label}
-                </div>
+      <div className="glass-card p-5 overflow-x-auto">
+        <div className="min-w-[700px]">
+          <div className="grid gap-1" style={{ gridTemplateColumns: `40px repeat(${hours.length}, 1fr)` }}>
+            <div />
+            {hours.map(h => (
+              <div key={h} className="text-center text-[#5A6480] text-[9px] py-1">{h}</div>
+            ))}
+            {days.map(day => (
+              <div key={day} className="contents">
+                <div className="text-[#8B95B8] text-[10px] flex items-center font-medium">{day}</div>
+                {heatmapData[day].map((value, h) => (
+                  <motion.div
+                    key={`${day}-${h}`}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: (days.indexOf(day) * 24 + h) * 0.002 }}
+                    className="h-6 rounded-sm cursor-pointer transition-all hover:scale-110 hover:z-10 relative"
+                    style={{ backgroundColor: getColor(value) }}
+                    onMouseEnter={() => setHoveredCell({ day, hour: h, value })}
+                    onMouseLeave={() => setHoveredCell(null)}
+                  >
+                    {hoveredCell?.day === day && hoveredCell?.hour === h && (
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 rounded bg-[#1A1D2E] border border-[rgba(255,255,255,0.1)] text-[10px] text-[#E0E4F0] whitespace-nowrap z-20">
+                        {day} {h}:00 — Score: {value}
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
               </div>
             ))}
           </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-3 pt-2">
-            <button className="btn-primary text-xs py-2 px-4">
-              <ExternalLink size={14} />
-              View on X
-            </button>
-            <button className="btn-secondary text-xs py-2 px-4">
-              <Search size={14} />
-              Run Autopsy
-            </button>
-            <button className="btn-secondary text-xs py-2 px-4">
-              <StickyNote size={14} />
-              Add Note
-            </button>
-          </div>
         </div>
-      </GlassCard>
-    </motion.div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Timeline Event Card                                                 */
-/* ------------------------------------------------------------------ */
-
-function TimelineEventCard({
-  event,
-  index,
-  isSelected,
-  onSelect,
-}: {
-  event: TimelineEvent;
-  index: number;
-  isSelected: boolean;
-  onSelect: () => void;
-}) {
-  const isLeft = index % 2 === 0;
-  const config = eventTypeConfig[event.type];
-
-  return (
-    <div className={cn('relative flex items-start w-full', isLeft ? 'flex-row' : 'flex-row-reverse')}>
-      {/* Event Card */}
-      <motion.div
-        className={cn('w-[calc(50%-28px)]', isLeft ? 'mr-auto' : 'ml-auto')}
-        initial={{ opacity: 0, x: isLeft ? -30 : 30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.4, delay: index * 0.08, ease: easing }}
-      >
-        <div onClick={onSelect} className="cursor-pointer">
-          <GlassCard
-            className={cn(
-              'transition-all duration-200',
-              isSelected && 'border-[rgba(78,141,255,0.35)] shadow-[inset_0_1px_1px_rgba(78,141,255,0.15),0_8px_32px_rgba(0,0,0,0.35)]'
-            )}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <EventTypeBadge type={event.type} />
-              <span className="text-xs text-[#5A6480] font-data">
-                {format(parseISO(event.date), 'MMM dd')} &middot; {event.time}
-              </span>
-            </div>
-
-            <h4 className="text-sm font-semibold text-[#E0E4F0] mb-1 leading-snug">
-              {event.title}
-            </h4>
-            <p className="text-xs text-[#8B95B8] leading-relaxed line-clamp-2">
-              {event.description}
-            </p>
-
-            <div className="flex items-center gap-2 mt-3">
-              <ImpactBadge impact={event.impact} />
-              <span className="text-[10px] text-[#5A6480] ml-auto flex items-center gap-0.5">
-                {isSelected ? (
-                  <>
-                    Less <ChevronUp size={10} />
-                  </>
-                ) : (
-                  <>
-                    Details <ChevronDown size={10} />
-                  </>
-                )}
-              </span>
-            </div>
-          </GlassCard>
-        </div>
-
-        <AnimatePresence>
-          {isSelected && <EventDetailPanel event={event} onClose={onSelect} />}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* Center Node Dot */}
-      <motion.div
-        className="absolute left-1/2 -translate-x-1/2 top-5 z-10"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.3, delay: index * 0.08 + 0.15, type: 'spring', stiffness: 260, damping: 20 }}
-      >
-        <div
-          className="w-3.5 h-3.5 rounded-full border-2 border-[#E0E4F0] shadow-lg"
-          style={{ backgroundColor: config.color }}
-        />
-      </motion.div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Mobile Timeline Card                                                */
-/* ------------------------------------------------------------------ */
-
-function MobileTimelineCard({
-  event,
-  index,
-  isSelected,
-  onSelect,
-}: {
-  event: TimelineEvent;
-  index: number;
-  isSelected: boolean;
-  onSelect: () => void;
-}) {
-  const config = eventTypeConfig[event.type];
-
-  return (
-    <motion.div
-      className="relative pl-8"
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.08, ease: easing }}
-    >
-      {/* Node dot on left edge */}
-      <motion.div
-        className="absolute left-0 top-5 z-10"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.3, delay: index * 0.08 + 0.15, type: 'spring', stiffness: 260, damping: 20 }}
-      >
-        <div
-          className="w-3.5 h-3.5 rounded-full border-2 border-[#E0E4F0] shadow-lg"
-          style={{ backgroundColor: config.color }}
-        />
-      </motion.div>
-
-      <div onClick={onSelect} className="cursor-pointer">
-        <GlassCard
-          className={cn(
-            'transition-all duration-200',
-            isSelected && 'border-[rgba(78,141,255,0.35)]'
-          )}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <EventTypeBadge type={event.type} />
-            <span className="text-xs text-[#5A6480] font-data">
-              {format(parseISO(event.date), 'MMM dd')} &middot; {event.time}
-            </span>
-          </div>
-
-          <h4 className="text-sm font-semibold text-[#E0E4F0] mb-1 leading-snug">
-            {event.title}
-          </h4>
-          <p className="text-xs text-[#8B95B8] leading-relaxed line-clamp-2">
-            {event.description}
-          </p>
-
-          <div className="flex items-center gap-2 mt-3">
-            <ImpactBadge impact={event.impact} />
-          </div>
-        </GlassCard>
       </div>
 
-      <AnimatePresence>
-        {isSelected && <EventDetailPanel event={event} onClose={onSelect} />}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Main Timeline Page                                                  */
-/* ------------------------------------------------------------------ */
-
-export default function Timeline() {
-  const [eventFilter, setEventFilter] = useState<EventType | 'all'>('all');
-  const [dateFilter, setDateFilter] = useState('All Time');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  /* Filters */
-  const filteredEvents = useMemo((): TimelineEvent[] => {
-    let events: TimelineEvent[] = timelineEvents.map((e) => ({
-      id: e.id,
-      date: e.date,
-      time: e.time,
-      title: e.title,
-      impact: (e.impact === 'high' || e.impact === 'medium' || e.impact === 'low'
-        ? e.impact
-        : 'medium') as 'high' | 'medium' | 'low',
-      description: e.description,
-      type: (e.type === 'post' || e.type === 'engagement' || e.type === 'milestone' || e.type === 'trend'
-        ? e.type
-        : 'post') as EventType,
-    }));
-
-    if (eventFilter !== 'all') {
-      events = events.filter((e) => e.type === eventFilter);
-    }
-
-    if (dateFilter === 'Last 7 Days') {
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - 7);
-      events = events.filter((e) => parseISO(e.date) >= cutoff);
-    } else if (dateFilter === 'Last 30 Days') {
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - 30);
-      events = events.filter((e) => parseISO(e.date) >= cutoff);
-    }
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      events = events.filter(
-        (e) =>
-          e.title.toLowerCase().includes(q) ||
-          e.description.toLowerCase().includes(q)
-      );
-    }
-
-    return events;
-  }, [eventFilter, dateFilter, searchQuery]);
-
-  const selectedEvent = useMemo(
-    () => filteredEvents.find((e) => e.id === selectedId) || null,
-    [filteredEvents, selectedId]
-  );
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      {/* Page Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: easing }}
-      >
-        <h1 className="font-display font-bold text-2xl text-[#E0E4F0] tracking-tight mb-1">
-          Timeline
-        </h1>
-        <p className="text-sm text-[#8B95B8]">
-          Chronological view of your content activity and performance events
-        </p>
-      </motion.div>
-
-      {/* Filter Bar */}
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1, ease: easing }}
-        className="glass-card"
-      >
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Event Type Filter */}
-          <div className="relative">
-            <select
-              value={eventFilter}
-              onChange={(e) => setEventFilter(e.target.value as EventType | 'all')}
-              className="form-input appearance-none pr-8 text-sm py-2 cursor-pointer"
-            >
-              {filterOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              size={14}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A6480] pointer-events-none"
-            />
-          </div>
-
-          {/* Date Range */}
-          <div className="relative">
-            <select
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-              className="form-input appearance-none pr-8 text-sm py-2 cursor-pointer"
-            >
-              {dateRangeOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              size={14}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A6480] pointer-events-none"
-            />
-          </div>
-
-          {/* Search */}
-          <div className="relative flex-1 min-w-[200px]">
-            <Search
-              size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6480]"
-            />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search events..."
-              className="form-input w-full pl-9 text-sm py-2"
-            />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Timeline */}
-      <div className="relative">
-        {/* Desktop: alternating left/right */}
-        <div className="hidden md:block">
-          {/* Central connector line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
-
-          {/* Traveling pulse dot */}
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#4E8DFF]"
-            animate={{ top: ['0%', '100%'] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-            style={{ boxShadow: '0 0 8px rgba(78,141,255,0.6)' }}
-          />
-
-          <div className="space-y-6 relative z-10">
-            {filteredEvents.map((event, index) => (
-              <TimelineEventCard
-                key={event.id}
-                event={event}
-                index={index}
-                isSelected={selectedId === event.id}
-                onSelect={() =>
-                  setSelectedId((prev) => (prev === event.id ? null : event.id))
-                }
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Mobile: all left-aligned */}
-        <div className="md:hidden">
-          {/* Left edge connector line */}
-          <div
-            className="absolute left-[7px] top-0 bottom-0 w-px"
-            style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
-          />
-
-          <div className="space-y-4 relative z-10">
-            {filteredEvents.map((event, index) => (
-              <MobileTimelineCard
-                key={event.id}
-                event={event}
-                index={index}
-                isSelected={selectedId === event.id}
-                onSelect={() =>
-                  setSelectedId((prev) => (prev === event.id ? null : event.id))
-                }
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Empty state */}
-        {filteredEvents.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-20"
-          >
-            <ClockIcon className="w-12 h-12 text-[#5A6480] mx-auto mb-4" />
-            <h3 className="text-lg font-display font-semibold text-[#8B95B8] mb-1">
-              No events found
-            </h3>
-            <p className="text-sm text-[#5A6480]">
-              Try adjusting your filters to see more results
-            </p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { icon: Flame, label: 'Best Day', value: 'Friday', sub: 'Average: 82/100', color: 'text-orange-400' },
+          { icon: Clock, label: 'Best Hour', value: '9:00 AM', sub: 'EST timezone', color: 'text-[#4E8DFF]' },
+          { icon: TrendingUp, label: 'Peak Engagement', value: '+47%', sub: 'vs average post', color: 'text-emerald-400' },
+        ].map((item, i) => (
+          <motion.div key={item.label} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.1 }} className="glass-card p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.03] flex items-center justify-center">
+              <item.icon className={`w-5 h-5 ${item.color}`} />
+            </div>
+            <div>
+              <p className="text-[#5A6480] text-[10px]">{item.label}</p>
+              <p className="text-[#E0E4F0] text-sm font-bold">{item.value}</p>
+              <p className="text-[#5A6480] text-[10px]">{item.sub}</p>
+            </div>
           </motion.div>
-        )}
+        ))}
       </div>
 
-      {/* Selected Detail Panel (mobile/desktop shared) */}
-      <AnimatePresence>
-        {selectedEvent && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, ease: easing }}
-          >
-            {/* Detail panel is rendered inline within each card */}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className="glass-card p-5">
+        <div className="flex items-center gap-2 mb-3"><Star className="w-4 h-4 text-[#FFD93D]" /><h3 className="text-[#E0E4F0] font-semibold text-sm">Recommendations</h3></div>
+        <div className="space-y-2">
+          {['Post between 8-10 AM EST on weekdays for maximum reach', 'Friday mornings show 23% higher engagement than other days', 'Avoid posting between 2-4 AM EST — lowest audience activity', 'Weekend afternoons (2-4 PM) work well for storytelling content'].map((tip, i) => (
+            <div key={i} className="flex items-start gap-2 text-xs"><span className="w-1 h-1 rounded-full bg-[#FFD93D] mt-1.5 flex-shrink-0" /><span className="text-[#8B95B8]">{tip}</span></div>
+          ))}
+        </div>
+      </div>
     </motion.div>
-  );
-}
-
-/* Clock icon for empty state (avoids reimporting Clock) */
-function ClockIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
   );
 }
