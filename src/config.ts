@@ -1,238 +1,30 @@
-// Site Configuration
-// Replace placeholder values with your actual content
-
-export interface SiteConfig {
-  language: string;
-  siteTitle: string;
-  siteDescription: string;
-}
-
-export const siteConfig: SiteConfig = {
-  language: "",
-  siteTitle: "",
-  siteDescription: "",
-};
-
-// Hero Section
-export interface HeroConfig {
-  backgroundText: string;
-  heroImage: string;
-  heroImageAlt: string;
-  overlayText: string;
-  brandName: string;
-  navLinks: { label: string; href: string }[];
-}
-
-export const heroConfig: HeroConfig = {
-  backgroundText: "",  // Large background text. Keep short (1-3 words). The actual content and language should match the user's query (user's language or their specified language).
-  heroImage: "",       // MUST be transparent-background PNG.
-  heroImageAlt: "",
-  overlayText: "",
-  brandName: "",
-  navLinks: [],
-};
-
-// Intro Grid Section
-export interface PortfolioImage {
-  src: string;
-  alt: string;
-}
-
-export interface IntroGridConfig {
-  titleLine1: string;
-  titleLine2: string;
-  description: string;
-  portfolioImages: PortfolioImage[];
-  accentText: string;
-}
-
-export const introGridConfig: IntroGridConfig = {
-  titleLine1: "",
-  titleLine2: "",
-  description: "",
-  portfolioImages: [],
-  accentText: "",
-};
-
-// Featured Projects Section
-export interface Project {
-  id: number;
-  title: string;
-  category: string;
-  year: string;
-  image: string;
-  description: string;
-}
-
-export interface FeaturedProjectsConfig {
-  subtitle: string;
-  titleRegular: string;
-  titleItalic: string;
-  viewAllText: string;
-  viewAllHref: string;
-  viewProjectText: string;
-  projects: Project[];
-}
-
-export const featuredProjectsConfig: FeaturedProjectsConfig = {
-  subtitle: "",
-  titleRegular: "",
-  titleItalic: "",
-  viewAllText: "",
-  viewAllHref: "",
-  viewProjectText: "",
-  projects: [],
-};
-
-// Services Section
-export interface ServiceItem {
-  iconName: string;
-  title: string;
-  description: string;
-}
-
-export interface ServicesConfig {
-  subtitle: string;
-  titleLine1: string;
-  titleLine2Italic: string;
-  description: string;
-  services: ServiceItem[];
-}
-
-export const servicesConfig: ServicesConfig = {
-  subtitle: "",
-  titleLine1: "",
-  titleLine2Italic: "",
-  description: "",
-  services: [],
-};
-
-// Why Choose Me Section
-export interface StatItem {
-  value: number;
-  suffix: string;
-  label: string;
-}
-
-export interface FeatureCard {
-  image: string;
-  imageAlt: string;
-  title: string;
-  description: string;
-}
-
-export interface WhyChooseMeConfig {
-  subtitle: string;
-  titleRegular: string;
-  titleItalic: string;
-  statsLabel: string;
-  stats: StatItem[];
-  featureCards: FeatureCard[];
-  wideImage: string;
-  wideImageAlt: string;
-  wideTitle: string;
-  wideDescription: string;
-}
-
-export const whyChooseMeConfig: WhyChooseMeConfig = {
-  subtitle: "",
-  titleRegular: "",
-  titleItalic: "",
-  statsLabel: "",
-  stats: [],
-  featureCards: [],
-  wideImage: "",
-  wideImageAlt: "",
-  wideTitle: "",
-  wideDescription: "",
-};
-
-// Testimonials Section
-export interface Testimonial {
-  id: number;
-  name: string;
-  role: string;
-  image: string;
-  quote: string;
-}
-
-export interface TestimonialsConfig {
-  subtitle: string;
-  titleRegular: string;
-  titleItalic: string;
-  testimonials: Testimonial[];
-}
-
-export const testimonialsConfig: TestimonialsConfig = {
-  subtitle: "",
-  titleRegular: "",
-  titleItalic: "",
-  testimonials: [],
-};
-
-// FAQ Section
-export interface FAQItem {
-  id: string;
-  question: string;
-  answer: string;
-}
-
-export interface FAQConfig {
-  subtitle: string;
-  titleRegular: string;
-  titleItalic: string;
-  ctaText: string;
-  ctaButtonText: string;
-  ctaHref: string;
-  faqs: FAQItem[];
-}
-
-export const faqConfig: FAQConfig = {
-  subtitle: "",
-  titleRegular: "",
-  titleItalic: "",
-  ctaText: "",
-  ctaButtonText: "",
-  ctaHref: "",
-  faqs: [],
-};
-
-// Footer Section
-export interface SocialLink {
-  iconName: string;
-  href: string;
-  label: string;
-}
-
-export interface FooterLink {
-  label: string;
-  href: string;
-}
-
-export interface FooterConfig {
-  logoText: string;
-  contactLabel: string;
-  email: string;
-  locationText: string;
-  navigationLabel: string;
-  navLinks: FooterLink[];
-  socialLabel: string;
-  socialLinks: SocialLink[];
-  tagline: string;
-  copyright: string;
-  bottomLinks: FooterLink[];
-}
-
-export const footerConfig: FooterConfig = {
-  logoText: "",
-  contactLabel: "",
-  email: "",
-  locationText: "",
-  navigationLabel: "",
-  navLinks: [],
-  socialLabel: "",
-  socialLinks: [],
-  tagline: "",
-  copyright: "",
-  bottomLinks: [],
+export const CONFIG = {
+  app: {
+    name: 'Signal OS',
+    tagline: 'AI-Powered Attention Intelligence for Content Creators',
+    version: '2.0.0',
+  },
+  scoring: {
+    dimensions: [
+      { id: 'hook', name: 'Hook Quality', weight: 25, description: 'Opening line power, scroll-stop rate' },
+      { id: 'readability', name: 'Readability', weight: 15, description: 'Sentence length, clarity, flow' },
+      { id: 'structure', name: 'Structure', weight: 10, description: 'Format, line breaks, visual hierarchy' },
+      { id: 'emotional', name: 'Emotional Pull', weight: 20, description: 'Sentiment intensity, resonance' },
+      { id: 'timing', name: 'Timing', weight: 10, description: 'Post time optimization' },
+      { id: 'engagement', name: 'Engagement Likelihood', weight: 10, description: 'Reply, RT, like probability' },
+      { id: 'audience', name: 'Audience Match', weight: 5, description: 'Niche alignment' },
+      { id: 'clarity', name: 'Clarity', weight: 5, description: 'Message precision, no ambiguity' },
+    ],
+    maxChars: 280,
+    thresholds: {
+      exceptional: 85,
+      good: 70,
+      average: 50,
+    },
+  },
+  pricing: {
+    free: { price: 0, name: 'Free', scoresPerMonth: 50 },
+    pro: { price: 29, name: 'Pro', scoresPerMonth: Infinity },
+    team: { price: 79, name: 'Team', scoresPerMonth: Infinity },
+  },
 };
