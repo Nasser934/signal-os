@@ -1,74 +1,78 @@
-# AirLens - Portfolio Template
+# Signal OS
 
-A premium single-page portfolio template with a dark forest theme, featuring cinematic scroll animations, parallax effects, and a photography/creative-focused design.
+**AI-Powered Attention Intelligence for X (Twitter) Content Creators**
 
-## Features
+Signal OS scores your content across 8 dimensions and predicts performance before you post. Know your score. Own the feed.
 
-- **Hero Section** - Full-screen parallax layered hero with large background text, cutout model image, and overlay text
-- **Intro Grid** - Split-line mask reveal title with masonry image grid featuring per-image directional clip-path reveals, Ken Burns zoom, and varied-depth parallax
-- **Services** - Two-column layout with animated heading and staggered service cards in a 2x2 grid
-- **Why Choose Me** - Feature cards with clip-path reveal animations, animated stat counters, and a wide landscape image with center-expand reveal
-- **Featured Projects** - Alternating layout project cards with clip-path reveals, parallax images, viewfinder overlays, and staggered text animations
-- **Testimonials** - Auto-playing Swiper carousel with hover color-invert effect and gradient fade overlays
-- **FAQ** - Radix UI accordion with staggered reveal animations and CTA button
-- **Footer** - Massive SVG logo text, three-column layout with contact info, navigation, and social links
+## Live Demo
 
-## Tech Stack
-
-- **React 19** + **TypeScript**
-- **Vite** - Build tool
-- **Tailwind CSS 3** - Utility-first styling
-- **GSAP** + **ScrollTrigger** - Scroll-driven animations and parallax
-- **Lenis** - Smooth scroll
-- **Swiper** - Testimonials carousel
-- **Radix UI** - Accessible accordion component
-- **Lucide React** - Icon library
+**Frontend:** https://kjhppd7dd7onq.kimi.page
 
 ## Quick Start
 
+### Frontend Only (Mock Mode)
 ```bash
+cd app
 npm install
 npm run dev
 ```
 
-## Configuration
+### Full Stack (Production)
+```bash
+# 1. Start backend
+cd signal-os-backend
+cp .env.example .env
+# Fill in your keys
+npm install
+npm run db:migrate
+npm run dev
 
-All content is managed through `src/config.ts`. Each section has its own typed configuration object with empty placeholder values. Fill in the config objects to populate the site.
+# 2. Start frontend (new terminal)
+cd app
+cp .env.example .env.local
+# Set VITE_API_URL to your backend
+npm install
+npm run dev
+```
 
-Each section has a null check - if the config is empty (no title and no array items), the section will not render.
+## Features
 
-### Config Objects
+- **8-Dimension AI Scoring** — Hook (25%), Readability (15%), Structure (10%), Emotional Pull (20%), Timing (10%), Engagement (10%), Audience Match (5%), Clarity (5%)
+- **X Integration** — OAuth via Nango, post sync, direct publish
+- **Real-Time Analysis** — Sub-200ms scoring with OpenAI GPT-4o-mini
+- **17 Pages** — Dashboard, Draft Scorer, Insights, Timeline, Creators, Hashtags, Topics, Sentiment, Forecasting, Reports, Publish, Command Center, Replies, Weekly Report, Autopsy, Scorecard, Settings, Pricing
+- **Analytics** — PostHog integration for product analytics
 
-- `siteConfig` - Site title, description, language
-- `heroConfig` - Background text, hero image, overlay text, brand name, navigation links
-- `introGridConfig` - Title lines, description, portfolio images, accent text
-- `featuredProjectsConfig` - Section titles, projects with images/descriptions
-- `servicesConfig` - Section titles, service items with icons
-- `whyChooseMeConfig` - Feature cards, stats, wide landscape image
-- `testimonialsConfig` - Testimonial cards with quotes and author info
-- `faqConfig` - FAQ items, CTA button
-- `footerConfig` - Logo, contact info, navigation, social links, copyright
+## Architecture
 
-## Required Images
+```
+Frontend (React 19 + Vite + Tailwind)
+  |
+  |-- API Client --> Backend (Hono + PostgreSQL)
+  |-- OAuth --> Nango --> X API
+  |-- Analytics --> PostHog
+  |
+Backend
+  |-- AI Scoring --> OpenAI GPT-4o-mini
+  |-- Auth --> JWT + bcrypt
+  |-- X Proxy --> Nango --> X API v2
+  |-- Database --> PostgreSQL (Neon)
+```
 
-Place images in the `public/` directory:
+## Documentation
 
-- **Hero**: A cutout/transparent PNG for the hero model image (recommended: ~500px wide)
-- **Portfolio**: 5 images for the masonry grid (various aspect ratios)
-- **Featured Projects**: 1 image per project (4:3 aspect ratio recommended)
-- **Why Choose Me**: 2 portrait images (3:4 aspect ratio), 1 wide landscape (21:9 or 3:1 aspect ratio)
-- **Testimonials**: 1 avatar image per testimonial (square, small)
+- [API & MCP Integration Research](app/docs/API_MCP_INTEGRATION_RESEARCH.md)
+- [Deployment Guide](app/docs/DEPLOYMENT_GUIDE.md)
 
-## Design
+## Get API Keys
 
-- **Color Theme**: Deep forest charcoal (#0d1310) with off-white (#f4f4f4) alternating sections
-- **Typography**: Manrope (headings), Playfair Display (italic accents), DM Sans (body)
-- **Animations**: GSAP ScrollTrigger with clip-path reveals, parallax, scale effects, and staggered entrances
-- **Layout**: Alternating dark/light sections, max-width 7xl container
+| Service | URL | Free Tier |
+|---------|-----|-----------|
+| Nango (X OAuth) | https://app.nango.dev | 1,000 connections |
+| OpenAI | https://platform.openai.com | $5 credit |
+| Neon DB | https://neon.tech | 500MB |
+| PostHog | https://app.posthog.com | 1M events |
 
-## Notes
+## License
 
-- All animations use GSAP with ScrollTrigger for scroll-driven effects
-- Lenis provides smooth scroll behavior connected to GSAP ticker
-- The Swiper carousel auto-plays with configurable breakpoints
-- Service and footer icons use a string-to-component map (iconName field maps to Lucide icon components: Camera, Diamond, Users, Sparkles, Instagram, Twitter, Linkedin, Mail)
+MIT

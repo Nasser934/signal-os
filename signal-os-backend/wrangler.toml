@@ -1,0 +1,9 @@
+name = "signal-os-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[env.staging]
+name = "signal-os-api-staging"
+
+[env.production]
+name = "signal-os-api"
